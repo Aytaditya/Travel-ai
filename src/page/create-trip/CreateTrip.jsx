@@ -6,6 +6,7 @@ const CreateTrip = () => {
   const [currentInput, setCurrentInput] = useState('')
   const [predictions, setPredictions] = useState([])
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const [selectedDestination, setSelectedDestination] = useState('') // State that will hold final the selected destination
 
   useEffect(() => {
     if (currentInput.length > 0) { 
@@ -22,6 +23,7 @@ const CreateTrip = () => {
         try {
           const response = await axios.request(options);
           setPredictions(response.data.predictions);
+          console.log(response.data.predictions);
           setIsDropdownOpen(true); // Open the dropdown
         } catch (error) {
           console.error(error);
@@ -36,21 +38,30 @@ const CreateTrip = () => {
 
   const handleSelectPrediction = (description) => {
     setCurrentInput(description);
+    setSelectedDestination(description); // Update the selected destination state
     setPredictions([]);
     setIsDropdownOpen(false); // Close the dropdown after selection
   };
 
+  // Log the selected destination whenever it changes
+  useEffect(() => {
+    if (selectedDestination) {
+      console.log('Selected Destination:', selectedDestination);
+    }
+  }, [selectedDestination]);
+
   return (
-    <div className="sm:px-10 md:px-32 lg:px-56 xl:px-10 px:5 mt-10">
+    <div className="sm:px-10 md:px-32 lg:px-56 xl:px-72 px:5 mt-10">
       <h2 className="font-bold text-3xl">Tell us your travel preferences</h2>
       <p className="mt-3 text-gray-500 text-xl">Provide us with basic information, and our trip planner will generate a customized itinerary based on your preferences.</p>
 
       {/* Form */}
       <div>
         <div className="mt-20">
-          <h2 className="text-xl my-3 font-md">Choose your destination</h2>
+          <h2 className="text-xl my-3 font-semibold">Choose your destination</h2>
           <Input 
             type="text" 
+            className="w-full"
             placeholder="Enter your destination" 
             value={currentInput} 
             onChange={(e) => {
@@ -76,11 +87,15 @@ const CreateTrip = () => {
             </ul>
           )}
         </div>
-        
       </div>
 
+          {/* number of dates input */}
+      <div>
+          <h2 className="text-xl my-3 font-md mt-8 font-semibold">How many days are you planning?</h2>
+          <Input type="number" placeholder="Enter number of days" className="full" />
+      </div>
 
-
+      {/* budget input */}
     </div>
   )
 }
