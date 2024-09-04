@@ -1,10 +1,13 @@
 
 
+
 import { Input } from '../../components/ui/input'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
-import { SelectBudgetOptions, SelectTravelList } from '@/constants/Options'
+import { AI_PROMPT, SelectBudgetOptions, SelectTravelList } from '@/constants/Options'
 import { Button } from '@/components/ui/button'
+import { toast } from 'sonner'
+import { chatSession } from '@/service/AIModel'
 
 const CreateTrip = () => {
   const [currentInput, setCurrentInput] = useState('')
@@ -24,13 +27,40 @@ const CreateTrip = () => {
     people: ''
   })
 
+  const generateTripPlan = async (destination, days, budget, people) => {
+    // final prompt
+    const FINAL_PROMPT=AI_PROMPT
+    .replace('{location}',destination)
+    .replace('{totaldays}',days)
+    .replace('{traveller}',people)
+    .replace('{budget}',budget)
+    .replace('{totaldays}',days)
+
+    console.log('Final Prompt:', FINAL_PROMPT)
+
+    // passing final prompt to gemini model
+    const result =await chatSession.sendMessage(FINAL_PROMPT)
+    console.log(result?.response?.text());
+  }
+
+  // setting form values in handle submit and calling genrate trip function
   const handleSubmit = () => {
+    if(!selectedDestination || !inputDays || !inputBudget || !inputPeople) {
+      toast('Please fill in all the fields')
+      return
+    }
+    if(inputDays < 1 || inputDays > 10) {
+      toast('Please enter a valid number of days (1-10)')
+      return
+    }
     setFormData({
       destination: selectedDestination,
       days: inputDays,
       budget: inputBudget,
       people: inputPeople
     })
+
+    generateTripPlan(selectedDestination, inputDays, inputBudget, inputPeople)
   }
 
   // for printing value if formdata
@@ -123,7 +153,7 @@ const CreateTrip = () => {
       {/* Number of days input */}
       <div>
         <h2 className="text-xl my-3 font-md mt-8 font-semibold">How many days are you planning for your trip?</h2>
-        <Input type="number" placeholder="Enter number of days" className="full" value={inputDays} onChange={(e) => setInputDays(e.target.value)} />
+        <Input type="number" min="1" max="10" placeholder="Enter number of days" className="full" value={inputDays} onChange={(e) => setInputDays(e.target.value)} />
       </div>
 
       {/* Budget input */}
@@ -132,7 +162,7 @@ const CreateTrip = () => {
         <div className='grid grid-cols-3 gap-5 mt-5 cursor-pointer'>
           {SelectBudgetOptions.map((option) => (
             <div key={option.id}  
-            className={`p-4 border rounded-lg hover:shadow-2xl ${inputBudget==option.title && 'shadow-lg border-[2px]'}` }
+            className={`p-4 border rounded-lg hover:shadow-2xl ${inputBudget==option.title && 'shadow-lg border-[2px] '}` }
             onClick={()=>setInputBudget(option.title)}>
               <h2 className='text-3xl'>{option.icon}</h2>
               <h2 className='font-bold text-lg'>{option.title}</h2>
@@ -153,6 +183,7 @@ const CreateTrip = () => {
               <h2 className='text-3xl'>{option.icon}</h2>
               <h2 className='font-bold text-lg'>{option.title}</h2>
               <h2 className='text-sm text-gray-800'>{option.desc}</h2>
+              <h2 className='text-sm text-gray-600 font-thin font-serif mt-2 flex justify-start'>({option.people})</h2>
             </div>
           ))}
         </div>
