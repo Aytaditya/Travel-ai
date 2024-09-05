@@ -32,7 +32,7 @@ const ViewTrip = () => {
        <InfoSection trip={trip}/>
 
        {/* recomended hotels */}
-       <Hotels/>
+       <Hotels trip={trip}/>
     </div>
   )
 }
