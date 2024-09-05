@@ -7,6 +7,7 @@ import CreateTrip from './page/create-trip/CreateTrip.jsx'
 import Header from './components/custom/Header.jsx'
 import { Toaster } from 'sonner'
 import { ClerkProvider } from '@clerk/clerk-react'
+import ViewTrip from './view-trip/[tripid]/ViewTrip.jsx'
 
 
 // Import your publishable key
@@ -20,6 +21,10 @@ const router=createBrowserRouter([
   {
     path:'create-trip',
     element:<CreateTrip/>
+  },
+  {
+    path:'/view-trip/:tripId',
+    element:<ViewTrip/>
   }
 ])
 

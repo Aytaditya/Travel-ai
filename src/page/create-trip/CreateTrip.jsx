@@ -10,6 +10,7 @@ import { chatSession } from '@/service/AIModel'
 import { useUser } from "@clerk/clerk-react";
 import { setDoc,doc } from 'firebase/firestore'
 import { db } from '@/service/firebaseConfig'
+import { useNavigate } from 'react-router-dom'
 
 const CreateTrip = () => {
   const [currentInput, setCurrentInput] = useState('')
@@ -23,6 +24,9 @@ const CreateTrip = () => {
   const [inputPeople, setInputPeople] = useState('')
 
   const { isLoaded, user } = useUser(); // Access user information
+
+  // for navigation
+  const navigate=useNavigate();
 
   // loading state for management
   const [loading,setLoading]=useState(false);
@@ -73,11 +77,12 @@ const CreateTrip = () => {
     const userEmail=user.primaryEmailAddress.emailAddress;
     await setDoc(doc(db,"AITrips",docId),{
       userSelection:{destination, days, budget, people},
-      tripData:TripData,
+      tripData:JSON.parse(TripData),
       userEmail:userEmail,
       id:docId
     })
     setLoading(false);
+    navigate(`/view-trip/${docId}`)
   }
 
   // setting form values in handle submit and calling genrate trip function
