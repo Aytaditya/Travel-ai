@@ -6,6 +6,11 @@ import { RouterProvider,createBrowserRouter } from 'react-router-dom'
 import CreateTrip from './page/create-trip/CreateTrip.jsx'
 import Header from './components/custom/Header.jsx'
 import { Toaster } from 'sonner'
+import { ClerkProvider } from '@clerk/clerk-react'
+
+
+// Import your publishable key
+const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
 
 const router=createBrowserRouter([
   {
@@ -20,8 +25,10 @@ const router=createBrowserRouter([
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
+    <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
     <Header/>
     <Toaster/>
     <RouterProvider router={router}/>
+    </ClerkProvider>
   </StrictMode>,
 )

@@ -1,5 +1,4 @@
-
-
+/* eslint-disable no-unused-vars */
 
 import { Input } from '../../components/ui/input'
 import { useEffect, useState } from 'react'
@@ -8,6 +7,7 @@ import { AI_PROMPT, SelectBudgetOptions, SelectTravelList } from '@/constants/Op
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
 import { chatSession } from '@/service/AIModel'
+import { useUser } from "@clerk/clerk-react";
 
 const CreateTrip = () => {
   const [currentInput, setCurrentInput] = useState('')
@@ -20,6 +20,14 @@ const CreateTrip = () => {
   const [inputBudget, setInputBudget] = useState('')
   const [inputPeople, setInputPeople] = useState('')
 
+  const { isLoaded, user } = useUser(); // Access user information
+
+  // useEffect(() => {
+  //   if (isLoaded && user) {
+  //     console.log(user); // Log user info when it's available
+  //   }
+  // }, [isLoaded, user]);
+
   const [formData, setFormData] = useState({
     destination: '',
     days: '',
@@ -27,6 +35,7 @@ const CreateTrip = () => {
     people: ''
   })
 
+  // generating prompt
   const generateTripPlan = async (destination, days, budget, people) => {
     // final prompt
     const FINAL_PROMPT=AI_PROMPT
@@ -38,6 +47,9 @@ const CreateTrip = () => {
 
     console.log('Final Prompt:', FINAL_PROMPT)
 
+    if(!user){
+      toast('Please Sign in First');
+    }
     // passing final prompt to gemini model
     const result =await chatSession.sendMessage(FINAL_PROMPT)
     console.log(result?.response?.text());
