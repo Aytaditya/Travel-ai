@@ -8,6 +8,8 @@ import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
 import { chatSession } from '@/service/AIModel'
 import { useUser } from "@clerk/clerk-react";
+import { setDoc,doc } from 'firebase/firestore'
+import { db } from '@/service/firebaseConfig'
 
 const CreateTrip = () => {
   const [currentInput, setCurrentInput] = useState('')
@@ -22,9 +24,12 @@ const CreateTrip = () => {
 
   const { isLoaded, user } = useUser(); // Access user information
 
+  // loading state for management
+  const [loading,setLoading]=useState(false);
+
   // useEffect(() => {
   //   if (isLoaded && user) {
-  //     console.log(user); // Log user info when it's available
+  //     console.log('User Email:', user.primaryEmailAddress.emailAddress); // Log user info when it's available
   //   }
   // }, [isLoaded, user]);
 
@@ -37,6 +42,9 @@ const CreateTrip = () => {
 
   // generating prompt
   const generateTripPlan = async (destination, days, budget, people) => {
+
+    setLoading(true);
+
     // final prompt
     const FINAL_PROMPT=AI_PROMPT
     .replace('{location}',destination)
@@ -53,6 +61,23 @@ const CreateTrip = () => {
     // passing final prompt to gemini model
     const result =await chatSession.sendMessage(FINAL_PROMPT)
     console.log(result?.response?.text());
+    setLoading(false);
+    SaveAiTrip(result?.response?.text(),destination, days, budget, people);
+  }
+
+  // saving trip to database
+  const SaveAiTrip=async(TripData,destination, days, budget, people)=>{
+
+    setLoading(true)
+    const docId=Date.now().toString()
+    const userEmail=user.primaryEmailAddress.emailAddress;
+    await setDoc(doc(db,"AITrips",docId),{
+      userSelection:{destination, days, budget, people},
+      tripData:TripData,
+      userEmail:userEmail,
+      id:docId
+    })
+    setLoading(false);
   }
 
   // setting form values in handle submit and calling genrate trip function
@@ -75,7 +100,7 @@ const CreateTrip = () => {
     generateTripPlan(selectedDestination, inputDays, inputBudget, inputPeople)
   }
 
-  // for printing value if formdata
+  // for printing value of formdata
   useEffect(() => {
     if (formData.destination || formData.days || formData.budget || formData.people) {
       console.log('Form Data:', formData)
@@ -202,7 +227,12 @@ const CreateTrip = () => {
       </div>
 
       <div className='my-10 justify-end flex'>
-        <Button onClick={handleSubmit}>Generate trip ✈️</Button>
+        {!loading &&(
+          <Button onClick={handleSubmit} disabled={loading}>Generate trip ✈️</Button>
+        )}
+        {loading &&(
+          <Button disabled={true}>Generating Trip...</Button>
+        )}
       </div>
     </div>  
   )
