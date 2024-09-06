@@ -7,6 +7,7 @@ import { useParams } from "react-router-dom"
 import InfoSection from "../components/InfoSection"
 import Hotels from "../components/Hotels"
 import PlacesToVisit from "../components/PlacesToVisit"
+import Footer from "../components/Footer"
 
 
 const ViewTrip = () => {
@@ -37,6 +38,9 @@ const ViewTrip = () => {
 
        {/* activites and places to visit */}
        <PlacesToVisit trip={trip}/>
+
+       {/* footer */}
+       <Footer/>
     </div>
   )
 }
