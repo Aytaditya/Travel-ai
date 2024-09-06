@@ -6,6 +6,7 @@ import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import InfoSection from "../components/InfoSection"
 import Hotels from "../components/Hotels"
+import PlacesToVisit from "../components/PlacesToVisit"
 
 
 const ViewTrip = () => {
@@ -33,6 +34,9 @@ const ViewTrip = () => {
 
        {/* recomended hotels */}
        <Hotels trip={trip}/>
+
+       {/* activites and places to visit */}
+       <PlacesToVisit trip={trip}/>
     </div>
   )
 }
