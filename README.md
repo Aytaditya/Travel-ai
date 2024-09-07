@@ -6,5 +6,11 @@
 ## Creating a trip
 ![create trip page](./createTrip.png)
 
-## Dynamic trip route
-![trip](./dynamic.png)
+## Dyanamic Trip Route
+![trip](./day.png)
+
+## Hotel Recomendations
+![Hotel Recomendations](./hotels.png)
+
+## My Past Trips
+![Past Trips](./mytrip.png)
