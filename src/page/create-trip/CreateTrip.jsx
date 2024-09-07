@@ -60,7 +60,7 @@ const CreateTrip = () => {
     console.log('Final Prompt:', FINAL_PROMPT)
 
     if(!user){
-      toast('Please Sign in First');
+      toast.error('Please Sign in First');
     }
     // passing final prompt to gemini model
     const result =await chatSession.sendMessage(FINAL_PROMPT)
@@ -88,11 +88,11 @@ const CreateTrip = () => {
   // setting form values in handle submit and calling genrate trip function
   const handleSubmit = () => {
     if(!selectedDestination || !inputDays || !inputBudget || !inputPeople) {
-      toast('Please fill in all the fields')
+      toast.error('Please fill in all the fields')
       return
     }
     if(inputDays < 1 || inputDays > 10) {
-      toast('Please enter a valid number of days (1-10)')
+      toast.error('Please enter a valid number of days (1-10)')
       return
     }
     setFormData({
